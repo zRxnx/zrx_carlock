@@ -3,5 +3,8 @@ Webhook = {}
 --| Discord webhook links
 Webhook.Links = {
     punish = '',
-    callback = '',
+    haskey = '',
+    givekey = '',
+    removekey = '',
+    sync = '',
 }

@@ -7,6 +7,9 @@ author 'zRxnx'
 description 'Advanced carlock system'
 version '1.0.0'
 
+docs 'https://docs.zrxnx.at'
+discord 'https://discord.gg/mcN25FJ33K'
+
 dependencies {
     'zrx_utility',
 	'ox_lib',
