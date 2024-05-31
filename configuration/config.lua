@@ -12,7 +12,8 @@ Config.ToggleKey = 'F7' --| Its a keymapping
 Config.ToggleTarget = true --| Use target to unlock/lock
 Config.UseSounds = true
 Config.IconColor  = 'rgba(173, 216, 230, 1)' --| rgba format
-Config.LockSpawnedVehicles = true
+Config.LockSpawnedVehicles = true --| for example npc cars
+Config.UseOwnedVehicles = true --| If you dont use a framework disable this
 Config.CheckForUpdates = true --| check for updates?
 
 Config.Menu = {
@@ -33,7 +34,7 @@ Config.PreventUnlocking = {
     checkTime = 1000, --| msec
 }
 
-Config.CheckVehicleOwner = { --| WARNING: Can impact the server stability massively
+Config.CheckVehicleOwner = { --| WARNING: Can impact the server stability massively | Requires Config.UseOwnedVehicles
     enabled = true, --| Every x time check the vehicle owners and grant them automatically keys
     checkTime = 60000, --| msec
 }

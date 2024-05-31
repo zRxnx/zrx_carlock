@@ -23,19 +23,23 @@ CreateThread(function()
         ) ENGINE=InnoDB;
     ]])
 
-    local response = CORE.Bridge.getVehicleObject().getAllVehicles()
-    local reponse2 = MySQL.query.await('SELECT `owner`, `identifier`, `name`, `plate` FROM `zrx_carlock`', {})
+    local response
+    if Config.UseOwnedVehicles then
+        response = CORE.Bridge.getVehicleObject().getAllVehicles()
 
-    for k, data in pairs(response) do
-        if not VEHICLE_KEYS[data.owner] then
-            VEHICLE_KEYS[data.owner] = {}
+        for k, data in pairs(response) do
+            if not VEHICLE_KEYS[data.owner] then
+                VEHICLE_KEYS[data.owner] = {}
+            end
+
+            VEHICLE_KEYS[data.owner][CORE.Shared.Trim(data.plate)] = true
+            VEHICLE_OWNER[CORE.Shared.Trim(data.plate)] = data.owner
         end
-
-        VEHICLE_KEYS[data.owner][CORE.Shared.Trim(data.plate)] = true
-        VEHICLE_OWNER[CORE.Shared.Trim(data.plate)] = data.owner
     end
 
-    for k, data in pairs(reponse2) do
+    response = MySQL.query.await('SELECT `owner`, `identifier`, `name`, `plate` FROM `zrx_carlock`', {})
+
+    for k, data in pairs(response) do
         if not VEHICLE_KEYS[data.identifier] then
             VEHICLE_KEYS[data.identifier] = {}
         end
@@ -53,7 +57,7 @@ CreateThread(function()
         PERMANENT_VEHICLES[#PERMANENT_VEHICLES + 1] = { owner = data.owner, identifier = data.identifier, name = data.name, plate = data.plate }
     end
 
-    while Config.CheckVehicleOwner.enabled do
+    while Config.CheckVehicleOwner.enabled and Config.UseOwnedVehicles do
         Wait(Config.CheckVehicleOwner.checkTime)
 
         response = CORE.Bridge.getVehicleObject().getAllVehicles()
