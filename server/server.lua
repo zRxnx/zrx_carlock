@@ -4,7 +4,7 @@ COOLDOWN, PLAYER_CACHE, VEHICLE_KEYS, VEHICLE_OWNER, LOCKED_VEHICLES, HOTWIRED_V
 
 CreateThread(function()
     if Config.CheckForUpdates then
-        --CORE.Server.CheckVersion('zrx_carlock')
+        CORE.Server.CheckVersion('zrx_carlock')
     end
 
     for i, player in pairs(GetPlayers()) do
