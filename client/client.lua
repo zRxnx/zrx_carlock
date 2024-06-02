@@ -1,5 +1,5 @@
 CORE = exports.zrx_utility:GetUtility()
-LOCKED_VEHICLES, LOCKPICKED_VEHICLES, HOTWIRED_VEHICLES, FORCED_VEHICLES, CAN_HOTWIRE = {}, {}, {}, {}, {}
+LOCKED_VEHICLES, LOCKPICKED_VEHICLES, HOTWIRED_VEHICLES, FORCED_VEHICLES, CAN_HOTWIRE, DATA_ENGINE = {}, {}, {}, {}, {}, {}
 
 CORE.Client.RegisterKeyMappingCommand(Config.Command, Strings.cmd_toggle_desc, Config.ToggleKey, function()
     ToggleVehicle()
@@ -30,7 +30,73 @@ CORE.Client.RegisterKeyMappingCommand('hotwire', Strings.cmd_hotwire_desc, Confi
     end
 end)
 
+if Config.Engine.enabled then
+    CORE.Client.RegisterKeyMappingCommand(Config.Engine.command, Strings.cmd_engine_desc, Config.Engine.key, function()
+        local vehicle = GetVehiclePedIsIn(cache.ped, false)
+        local plate = GetVehicleNumberPlateText(vehicle)
+        local netId = NetworkGetNetworkIdFromEntity(vehicle)
+
+        if not DoesEntityExist(vehicle) then
+            return
+        end
+
+        if Config.Engine.needKey and not HasKey(plate, false) then
+            return CORE.Bridge.notification(Strings.no_keys)
+        end
+
+        local engineState = GetIsVehicleEngineRunning(vehicle)
+
+        if engineState then
+            DATA_ENGINE[netId] = false
+            CORE.Bridge.notification(Strings.engine_stop)
+
+            SetVehicleEngineOn(cache.vehicle, false, false, true)
+            SetVehicleUndriveable(cache.vehicle, true)
+            SetVehicleLights(vehicle, 0)
+
+            if Config.Engine.keepState then
+                CreateThread(function()
+                    while not DATA_ENGINE[netId] and IsVehicleValid(vehicle) do
+                        SetVehicleEngineOn(cache.vehicle, false, false, true)
+                        SetVehicleUndriveable(cache.vehicle, true)
+                        Wait(0)
+                    end
+                end)
+            end
+        else
+            DATA_ENGINE[netId] = true
+            CORE.Bridge.notification(Strings.engine_start)
+
+            SetVehicleEngineOn(cache.vehicle, true, false, true)
+            SetVehicleUndriveable(cache.vehicle, false)
+
+            if Config.Engine.keepState then
+                CreateThread(function()
+                    while DATA_ENGINE[netId] and IsVehicleValid(vehicle) do
+                        SetVehicleEngineOn(cache.vehicle, true, false, true)
+                        SetVehicleUndriveable(cache.vehicle, false)
+                        Wait(0)
+                    end
+                end)
+            end
+
+            SetVehicleLights(vehicle, 2)
+        end
+    end)
+end
+
 lib.onCache('vehicle', function(vehicle)
+    if not vehicle and Config.Engine.keepState then
+        vehicle = cache.vehicle
+        local netId = NetworkGetNetworkIdFromEntity(vehicle)
+
+        if DATA_ENGINE[netId] then
+            SetVehicleLights(vehicle, 2)
+        end
+    elseif not vehicle then
+        return
+    end
+
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     local plate = GetVehicleNumberPlateText(vehicle)
     local model = GetEntityModel(vehicle)
@@ -81,7 +147,7 @@ RegisterNetEvent('zrx_carlock:client:sync', function(action, data)
             return
         end
 
-        SetVehicleDoorsLocked(vehicle, 2)
+        SetVehicleDoorsLocked(vehicle, data?.state or 2)
         SetVehicleDoorsLockedForAllPlayers(vehicle, true)
     elseif action == 'remove' then
         LOCKED_VEHICLES[data.netid] = false
@@ -93,7 +159,7 @@ RegisterNetEvent('zrx_carlock:client:sync', function(action, data)
 
         SetVehicleDoorsLocked(vehicle, 1)
         SetVehicleDoorsLockedForAllPlayers(vehicle, false)
-        SetVehicleEngineOn(vehicle, true, true, true)
+        SetVehicleEngineOn(vehicle, true, true, false)
         SetVehicleUndriveable(vehicle, false)
     end
 end)
@@ -133,7 +199,6 @@ if Config.Lockpick.enabled then
             return true
         end,
         onSelect = function(data)
-            print(GetVehicleNumberPlateText(data.entity), data.entity)
             StartLockpick(GetVehicleNumberPlateText(data.entity), data.entity)
         end
     })

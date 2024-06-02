@@ -5,8 +5,8 @@ Config.ToggleKey = 'F7' --| Its a keymapping
 Config.ToggleTarget = true --| Use target to unlock/lock
 Config.UseSounds = true
 Config.IconColor  = 'rgba(173, 216, 230, 1)' --| rgba format
-Config.LockSpawnedVehicles = true --| for example npc cars
-Config.UseOwnedVehicles = true --| If you dont use a framework disable this
+Config.UseOwnedVehicles = true --| If you dont use a framework disable this 
+Config.LockSpawnedVehicles = true
 Config.CheckForUpdates = true --| check for updates?
 
 Config.Menu = {
@@ -20,6 +20,15 @@ Config.GiveKeyMenu = {
     command = 'givekeymenu',
     key = 'F11',
     playerDistance = 5.0, --| Distance to show players in menu
+}
+
+Config.Engine = {
+    enabled = true,
+
+    command = 'toggleengine',
+    key = 'G',
+    needKey = true,
+    keepState = true, --| If you leave the vehicle while the engine is on, the engine stays on until someone changes it
 }
 
 Config.PreventUnlocking = {

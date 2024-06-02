@@ -2,6 +2,7 @@ Strings = {
     cmd_toggle_desc = 'Lock/Unlock vehicle',
     cmd_hotwire_desc = 'Hotwire vehicle',
     cmd_givekey_desc = 'Givekey menu',
+    cmd_engine_desc = 'Toggle Engine',
 
     target_lockpick = 'Lockpick Vehicle',
     target_toggle = 'Lock/Unlock Vehicle',
@@ -9,6 +10,9 @@ Strings = {
     locked = 'You locked the vehicle',
     locked_auto = 'The vehicle was locked automatically',
     unlocked = 'You unlocked the vehicle',
+
+    engine_stop = 'Vehicle engine stopped',
+    engine_start = 'Vehicle engine started',
 
     vehicle_stopped = 'The vehicle was stopped, you dont have any keys for that',
     not_owner = 'You are not the owner of that vehicle',
