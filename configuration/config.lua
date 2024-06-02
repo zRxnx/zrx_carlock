@@ -1,12 +1,5 @@
 Config = {}
 
---[[
-TODO
-
-SHOWCASE
-DOCS
-]]
-
 Config.Command = 'carlock' --| Command name
 Config.ToggleKey = 'F7' --| Its a keymapping
 Config.ToggleTarget = true --| Use target to unlock/lock
