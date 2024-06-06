@@ -147,8 +147,17 @@ RegisterNetEvent('zrx_carlock:client:sync', function(action, data)
             return
         end
 
-        SetVehicleDoorsLocked(vehicle, data?.state or 2)
+        SetVehicleDoorsLocked(vehicle, 2)
         SetVehicleDoorsLockedForAllPlayers(vehicle, true)
+    elseif action == 'npc' then
+        LOCKED_VEHICLES[data.netid] = true
+        local vehicle = NetworkGetEntityFromNetworkId(data.netid)
+
+        if not DoesEntityExist(vehicle) then
+            return
+        end
+
+        SetVehicleDoorsLocked(vehicle, data.state)
     elseif action == 'remove' then
         LOCKED_VEHICLES[data.netid] = false
         local vehicle = NetworkGetEntityFromNetworkId(data.netid)

@@ -116,7 +116,7 @@ if Config.LockSpawnedVehicles then
         local netId = NetworkGetNetworkIdFromEntity(entity)
         LOCKED_VEHICLES[netId] = true
 
-        TriggerClientEvent('zrx_carlock:client:sync', -1, 'add', { netid = netId, state = 3 })
+        TriggerClientEvent('zrx_carlock:client:sync', -1, 'npc', { netid = netId, state = 3 })
     end)
 end
 
