@@ -41,9 +41,16 @@ Config.CheckVehicleOwner = { --| WARNING: Can impact the server stability massiv
     checkTime = 60000, --| msec
 }
 
-Config.LockVehicle = {
-    enabled = true, --| Lock vehicle when the speed is reached
-    speed = 10, --| KPH
+Config.AutoLockVehicle = {
+    speed = {
+        enabled = true, --| Lock vehicle when the speed is reached
+        value = 10 --| KPH
+    },
+
+    exitVehicle = {
+        enabled = true, --| Lock vehicle after the driver left (needs keys)
+        onlyOwner = false,
+    }
 }
 
 Config.Lockpick = { --| Requires ox_target

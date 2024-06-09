@@ -86,14 +86,37 @@ if Config.Engine.enabled then
 end
 
 lib.onCache('vehicle', function(vehicle)
-    if not vehicle and Config.Engine.keepState then
-        vehicle = cache.vehicle
-        local netId = NetworkGetNetworkIdFromEntity(vehicle)
+    if DoesEntityExist(vehicle) then
+        return
+    end
 
+    vehicle = cache.vehicle
+
+    local netId = NetworkGetNetworkIdFromEntity(vehicle)
+    local lockState = GetVehicleDoorLockStatus(vehicle)
+    local plate = GetVehicleNumberPlateText(vehicle)
+
+    if Config.Engine.keepState then
         if DATA_ENGINE[netId] then
             SetVehicleLights(vehicle, 2)
         end
-    elseif not vehicle then
+    end
+
+    if Config.AutoLockVehicle.exitVehicle.enabled then
+        if not HasKey(plate, Config.AutoLockVehicle.exitVehicle.onlyOwner) then
+            return
+        end
+
+        Wait(1000)
+
+        if lockState == 0 or lockState == 1 then
+            ToggleVehicle(plate, vehicle)
+        end
+    end
+end)
+
+lib.onCache('vehicle', function(vehicle)
+    if not DoesEntityExist(vehicle) then
         return
     end
 
@@ -109,14 +132,14 @@ lib.onCache('vehicle', function(vehicle)
     if Config.Whitelist.model[model] then return end
     if not IsVehicleValid(vehicle) then return end
     if HOTWIRED_VEHICLES[netId]?.hotwired then return end
-    if GetIsVehicleEngineRunning(vehicle) then return end
     if HasKey(plate) then
-        if Config.LockVehicle.enabled then
+        if Config.AutoLockVehicle.speed.enabled then
             LockVehicleAfter(vehicle)
         end
 
         return
     end
+    if GetIsVehicleEngineRunning(vehicle) then return end
 
     ForceStopVehicle(plate, vehicle)
 
@@ -201,7 +224,7 @@ if Config.Lockpick.enabled then
             local plate = GetVehicleNumberPlateText(entity)
             local lockstate = GetVehicleDoorLockStatus(entity)
 
-            if DoesEntityExist(GetPedInVehicleSeat(entity, -1)) or HasKey(plate) or (lockstate == 0 or lockstate == 1) then
+            if DoesEntityExist(GetPedInVehicleSeat(entity, -1)) or (lockstate == 0 or lockstate == 1) then
                 return false
             end
 
@@ -218,17 +241,10 @@ if Config.ToggleTarget then
         label = Strings.target_toggle,
         icon = 'fa-solid fa-key',
         distance = 1,
-        canInteract = function(entity, distance, coords, name, bone)
-            local plate = GetVehicleNumberPlateText(entity)
-
-            if DoesEntityExist(GetPedInVehicleSeat(entity, -1)) and HasKey(plate) then
-                return false
-            end
-
-            return true
-        end,
         onSelect = function(data)
-            ToggleVehicle(GetVehicleNumberPlateText(data.entity), data.entity)
+            local plate = GetVehicleNumberPlateText(data.entity)
+
+            ToggleVehicle(plate, data.entity)
         end
     })
 end

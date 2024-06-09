@@ -274,7 +274,7 @@ LockVehicleAfter = function(vehicle)
     while IsVehicleValid(vehicle) do
         speed = GetEntitySpeed(vehicle) * 3.6
 
-        if speed >= Config.LockVehicle.speed then
+        if speed >= Config.AutoLockVehicle.speed.value then
             CORE.Bridge.notification(Strings.locked_auto)
             LOCKED_VEHICLES[vehicle] = true
 
@@ -295,6 +295,10 @@ StartLockpick = function(plate, vehicle)
 
     if LOCKPICKED_VEHICLES[netId] and LOCKPICKED_VEHICLES[netId].attempts >= Config.Lockpick.maxAttempts then
         return CORE.Bridge.notification(Strings.lockpick_max)
+    end
+
+    if HasKey(plate) then
+        return
     end
 
     local class = GetVehicleClass(vehicle)
