@@ -240,9 +240,7 @@ ToggleVehicle = function(plate, vehicle)
         CORE.Bridge.notification(Strings.locked)
         TriggerServerEvent('zrx_carlock:server:sync', 'add', { netid = NetworkGetNetworkIdFromEntity(vehicle), plate = plate })
 
-        if Config.UseSounds then
-            PlaySoundFrontend(-1, 'Keycard_Fail', 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', true)
-        end
+        PlaySyncSound(-1, 'Keycard_Fail', 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', vehicle)
 
         SetVehicleDoorsLocked(vehicle, 2)
         SetVehicleDoorsLockedForAllPlayers(vehicle, true)
@@ -255,9 +253,7 @@ ToggleVehicle = function(plate, vehicle)
         CORE.Bridge.notification(Strings.unlocked)
         TriggerServerEvent('zrx_carlock:server:sync', 'remove', { netid = NetworkGetNetworkIdFromEntity(vehicle), plate = plate })
 
-        if Config.UseSounds then
-            PlaySoundFrontend(-1, 'Keycard_Success', 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', true)
-        end
+        PlaySyncSound(-1, 'Keycard_Success', 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', vehicle)
 
         SetVehicleDoorsLocked(vehicle, 1)
         SetVehicleDoorsLockedForAllPlayers(vehicle, false)
@@ -334,6 +330,22 @@ StartLockpick = function(plate, vehicle)
     ClearPedTasks(cache.ped)
 end
 
+PlaySyncSound = function(id, name, ref, entity, cancel)
+    if not Config.UseSounds then
+        return
+    end
+
+    local netId = NetworkGetNetworkIdFromEntity(entity)
+
+    TriggerServerEvent('zrx_carlock:server:syncSound', {
+        id = id,
+        name = name,
+        ref = ref,
+        netId = netId,
+        cancel = cancel
+    })
+end
+
 StartHotwire = function(plate, vehicle)
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     lib.hideTextUI()
@@ -347,11 +359,7 @@ StartHotwire = function(plate, vehicle)
 
     if skillCheck then
         TriggerServerEvent('zrx_carlock:server:sync', 'hotwire', { netid = netId, plate = plate })
-
-        if Config.UseSounds then
-            PlaySoundFrontend(-1, 'Security_Box_Offline_Gun', 'dlc_ch_heist_finale_security_alarms_sounds', true)
-            Wait(1500)
-        end
+        PlaySyncSound(-1, 'Security_Box_Offline_Gun', 'dlc_ch_heist_finale_security_alarms_sounds', vehicle)
 
         FORCED_VEHICLES[netId] = false
 
@@ -364,16 +372,10 @@ StartHotwire = function(plate, vehicle)
 
         CORE.Bridge.notification(Strings.hotwired)
 
-        if Config.UseSounds then
-            CreateThread(function()
-                local soundId = GetSoundId()
-
-                PlaySoundFrontend(soundId, 'Drop_Zone_Alarm', 'DLC_Exec_Air_Drop_Sounds', true)
-                Wait(10000)
-                StopSound(soundId)
-                ReleaseSoundId(soundId)
-            end)
-        end
+        PlaySyncSound(GetSoundId(), 'Drop_Zone_Alarm', 'DLC_Exec_Air_Drop_Sounds', vehicle, {
+            enabled = true,
+            time = 10000
+        })
 
         HightlightVehicle(vehicle)
 

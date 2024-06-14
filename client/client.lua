@@ -196,6 +196,25 @@ RegisterNetEvent('zrx_carlock:client:sync', function(action, data)
     end
 end)
 
+RegisterNetEvent('zrx_carlock:client:syncSound', function(data)
+    local vehicle = NetworkGetEntityFromNetworkId(data.netId)
+
+    if not DoesEntityExist(vehicle) then
+        return
+    end
+
+    PlaySoundFromEntity(data.id, data.name, vehicle, data.ref, true)
+
+    if not data.cancel.enabled then
+        return
+    end
+
+    SetTimeout(data.cancel.time, function()
+        StopSound(data.id)
+        ReleaseSoundId(data.id)
+    end)
+end)
+
 CreateThread(function()
     local vehicle
 
@@ -237,7 +256,7 @@ if Config.Lockpick.enabled then
 end
 
 if Config.ToggleTarget then
-    exports.ox_target:addGlobalVehicle({
+    exports.ox_targe:addGlobalVehicle({
         label = Strings.target_toggle,
         icon = 'fa-solid fa-key',
         distance = 1,

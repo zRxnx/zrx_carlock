@@ -14,7 +14,7 @@ An advanced carlock system for FiveM
 - Hotwire/Lockpicking with skillcheck
 - Give Key option (temp & permanent)
 - Prevent 3rd party unlocking
-- Lock vehicle after x speed
+- Automation (Lock vehicle after x speed & Lock vehicle after exit vehicle)
 - Whitelist system (No need to have keys)
 - Key as items (SOON!)
 - Sounds

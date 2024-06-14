@@ -130,6 +130,10 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
 end)
 
+RegisterNetEvent('zrx_carlock:server:syncSound', function(data)
+    TriggerClientEvent('zrx_carlock:client:syncSound', -1, data)
+end)
+
 RegisterNetEvent('zrx_carlock:server:sync', function(action, data)
     if action ~= 'hotwire' and not HasKey(source, data.plate) then
         return Config.PunishPlayer('Tried to trigger "zrx_carlock:server:sync"')
